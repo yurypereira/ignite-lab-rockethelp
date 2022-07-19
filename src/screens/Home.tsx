@@ -9,14 +9,17 @@ import {
   Center,
 } from "native-base";
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+
 import { Filter } from "../components/Filter";
-import { ChatTeardropText, SignOut } from "phosphor-react-native";
-import Logo from "../assets/logo_secondary.svg";
 import { Button } from "../components/Button";
+import Logo from "../assets/logo_secondary.svg";
 import { IOrder, Order } from "../components/Order";
+import { ChatTeardropText, SignOut } from "phosphor-react-native";
 
 export function Home() {
   const { colors } = useTheme();
+  const { navigate } = useNavigation();
   const [statusSelected, setStatusSelected] = useState<"open" | "close">(
     "open"
   );
@@ -28,6 +31,14 @@ export function Home() {
       status: "open",
     },
   ]);
+
+  function handleNewOrder() {
+    navigate("New");
+  }
+
+  function handleOpenDetails(order: IOrder) {
+    navigate("Details", { orderId: order.id });
+  }
 
   return (
     <VStack flex={1} pb={6} bg="gray.700">
@@ -76,7 +87,9 @@ export function Home() {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 100 }}
-          renderItem={({ item }) => <Order data={item} />}
+          renderItem={({ item }) => (
+            <Order data={item} onPress={() => handleOpenDetails(item)} />
+          )}
           ListEmptyComponent={() => (
             <Center>
               <ChatTeardropText color={colors.gray[300]} size={40} />
@@ -88,7 +101,7 @@ export function Home() {
           )}
         />
 
-        <Button title="Nova solicitação" />
+        <Button title="Nova solicitação" onPress={handleNewOrder} />
       </VStack>
     </VStack>
   );
